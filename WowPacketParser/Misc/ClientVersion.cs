@@ -120,7 +120,11 @@ namespace WowPacketParser.Misc
             new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_0_20201, new DateTime(2015, 06, 26)),
             new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_0_20216, new DateTime(2015, 07, 02)),
             new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_0_20253, new DateTime(2015, 07, 09)),
-            new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_0_20338, new DateTime(2015, 07, 27))
+            new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_0_20338, new DateTime(2015, 07, 27)),
+            new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_2_20444, new DateTime(2015, 09, 01)),
+            new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_2a_20490, new DateTime(2015, 09, 09)),
+            new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_2a_20574, new DateTime(2015, 10, 05)),
+            new KeyValuePair<ClientVersionBuild, DateTime>(ClientVersionBuild.V6_2_3_20726, new DateTime(2015, 11, 17))
         };
 
         private static ClientType _expansion;
@@ -226,6 +230,10 @@ namespace WowPacketParser.Misc
                     case ClientVersionBuild.V6_2_0_20216:
                     case ClientVersionBuild.V6_2_0_20253:
                     case ClientVersionBuild.V6_2_0_20338:
+                    case ClientVersionBuild.V6_2_2_20444:
+                    case ClientVersionBuild.V6_2_2a_20490:
+                    case ClientVersionBuild.V6_2_2a_20574:
+                    case ClientVersionBuild.V6_2_3_20726:
                         return ClientVersionBuild.V6_0_2_19033;
                     default:
                         return Build;
@@ -284,9 +292,11 @@ namespace WowPacketParser.Misc
             UpdateFields.ResetUFDictionaries();
             try
             {
-                var asm = Assembly.LoadFrom(string.Format(AppDomain.CurrentDomain.BaseDirectory + "/" + "WowPacketParserModule.{0}.dll", VersionDefiningBuild));
-                Trace.WriteLine(string.Format("Loading module WowPacketParserModule.{0}.dll", VersionDefiningBuild));
+                var asm = Assembly.Load($"WowPacketParserModule.{VersionDefiningBuild}");
+                Trace.WriteLine($"Loading module WowPacketParserModule.{VersionDefiningBuild}.dll");
+
                 Handler.LoadHandlers(asm, VersionDefiningBuild);
+                Handler.LoadBattlenetHandlers(asm);
 
                 // This is a huge hack to handle the abnormal situation that appeared with builds 6.0 and 6.1 having mostly the same packet structures
                 if (!UpdateFields.LoadUFDictionaries(asm, version))
